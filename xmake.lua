@@ -6,14 +6,18 @@ target("pvq")
     set_kind("headeronly")
     add_includedirs("include", { public = true })
     add_headerfiles("include/(pvq/**.hpp)")
+    add_cxxflags("-march=native", { public = true })
 
-for _, filepath in ipairs(os.filedirs("bench/*.cpp")) do
-    local filename = filepath:match("bench/(.+).cpp$")
-    target("bench:" .. filename)
+target("pvq-test")
+    set_kind("binary")
+    add_deps("pvq")
+    add_files("test/**.cpp")
+
+for _, filepath in ipairs(os.files("bench/*.cpp")) do
+    target("bench"..path.basename(filepath))
         set_kind("binary")
         add_deps("pvq")
         add_files(filepath)
-        add_cxxflags("-march=native")
         if is_mode("debug") or is_mode("releasedbg") then
             add_cxxflags("-save-temps=obj")
         end

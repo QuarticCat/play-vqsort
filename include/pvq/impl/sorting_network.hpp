@@ -7,7 +7,12 @@
 namespace pvq::detail {
 
 constexpr size_t NETWORK_ROWS = 16;
-constexpr size_t NETWORK_COLS_MAX = 16;
+constexpr size_t NETWORK_MAX_COLS = 16;
+
+template<SimdElement T>
+constexpr size_t NETWORK_MAX_ELEMENT_COLS = std::min(AVX_LANES<T>, NETWORK_MAX_COLS);
+template<SimdElement T>
+constexpr size_t NETWORK_MAX_ELEMENTS = NETWORK_ROWS* NETWORK_MAX_ELEMENT_COLS<T>;
 
 /// Compare and swap
 template<class Comp, SimdElement T>
@@ -132,7 +137,7 @@ template<size_t N, class Comp, SimdElement T>
 
 template<class Comp, SimdElement T>
 [[gnu::always_inline]] void sorting_network(T* __restrict buf, size_t cols) {
-    assume(cols <= std::min(AVX_LANES<T>, NETWORK_COLS_MAX));
+    assume(cols <= NETWORK_MAX_ELEMENT_COLS<T>);
 
     // TODO: bypass buffer
     // TODO: interleave memory accesses and operations
