@@ -10,7 +10,18 @@
 #include <type_traits>
 #include <utility>
 
-namespace pvq::detail {
+namespace pvq {
+
+template<class T>
+concept SimdElement = std::is_arithmetic_v<T> && !std::is_const_v<T>;
+
+template<SimdElement T>
+using Avx = T __attribute__((vector_size(32)));
+
+template<SimdElement T>
+constexpr size_t AVX_LANES = 32 / sizeof(T);
+
+namespace detail {
 
 #if defined(__clang__)
     #define PVQ_UNROLL _Pragma("unroll")
@@ -56,15 +67,6 @@ inline void assume(bool pred) {
 #endif
 }
 
-template<class T>
-concept SimdElement = std::is_arithmetic_v<T> && !std::is_const_v<T>;
-
-template<SimdElement T>
-using Avx = T __attribute__((vector_size(32)));
-
-template<SimdElement T>
-constexpr size_t AVX_LANES = 32 / sizeof(T);
-
 template<SimdElement T>
 Avx<T> loadu(T* ptr) {
     if constexpr (std::is_same_v<T, float>) {
@@ -95,4 +97,6 @@ inline bool all(__m256i x) {
     return _mm256_movemask_epi8(x) == -1;
 }
 
-}  // namespace pvq::detail
+}  // namespace detail
+
+}  // namespace pvq

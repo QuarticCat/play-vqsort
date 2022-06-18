@@ -14,4 +14,7 @@ for _, filepath in ipairs(os.filedirs("bench/*.cpp")) do
         add_deps("pvq")
         add_files(filepath)
         add_cxxflags("-march=native")
+        if is_mode("debug") or is_mode("releasedbg") then
+            add_cxxflags("-save-temps=obj")
+        end
 end
