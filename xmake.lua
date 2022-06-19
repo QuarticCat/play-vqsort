@@ -6,7 +6,7 @@ target("pvq")
     set_kind("headeronly")
     add_includedirs("include", { public = true })
     add_headerfiles("include/(pvq/**.hpp)")
-    add_cxxflags("-march=native", { public = true })
+    add_cxxflags("-march=native", { public = true }) -- Should I turn off strict aliasing?
 
 target("pvq-test")
     set_kind("binary")
